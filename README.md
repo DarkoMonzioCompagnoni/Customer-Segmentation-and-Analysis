@@ -1,7 +1,14 @@
 # Customer Segmentation and Analysis
 
+Project sections:
+- Dashboard on Tableau
+- Python code
+
+
+## Dashboard
 ![Tableau Customer Analysis Dashboard](https://github.com/DarkoMonzioCompagnoni/media/blob/main/Customer%20analysis%20_%20Tableau%20Public.gif)
 [See the dashboard on Tableau Public](https://public.tableau.com/app/profile/darko.monzio.compagnoni/viz/Customeranalysis_16866582899760/Customeranalysis)
+
 
 
 The dataset appears to contain information about various orders placed by customers. Here are the columns in the dataset:
