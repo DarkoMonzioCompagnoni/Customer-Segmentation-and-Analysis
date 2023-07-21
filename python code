@@ -1,0 +1,98 @@
+# Importing necessary libraries
+import pandas as pd
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+
+# Load the data
+data = pd.read_csv('/mnt/data/sales_06_FY2020-21 copy.csv')
+
+# Convert order_date to datetime
+data['order_date'] = pd.to_datetime(data['order_date'])
+
+# Create a customer dataframe
+customers = pd.DataFrame(data['cust_id'].unique(), columns=['cust_id'])
+
+# Get the last date in the dataset for recency calculation
+last_date = data['order_date'].max()
+
+# Recency
+recency = data.groupby('cust_id')['order_date'].max().reset_index()
+recency['recency'] = (last_date - recency['order_date']).dt.days
+customers = pd.merge(customers, recency[['cust_id', 'recency']], on='cust_id')
+
+# Frequency
+frequency = data.groupby('cust_id')['order_id'].nunique().reset_index()
+frequency.columns = ['cust_id', 'frequency']
+customers = pd.merge(customers, frequency, on='cust_id')
+
+# Monetary
+monetary = data.groupby('cust_id')['total'].sum().reset_index()
+customers = pd.merge(customers, monetary, on='cust_id')
+
+# Average Discount
+average_discount = data.groupby('cust_id')['Discount_Percent'].mean().reset_index()
+customers = pd.merge(customers, average_discount, on='cust_id')
+
+# Preferred Region
+preferred_region = data.groupby('cust_id')['Region'].agg(lambda x: x.value_counts().index[0]).reset_index()
+customers = pd.merge(customers, preferred_region, on='cust_id')
+
+# Preferred Category
+preferred_category = data.groupby('cust_id')['category'].agg(lambda x: x.value_counts().index[0]).reset_index()
+customers = pd.merge(customers, preferred_category, on='cust_id')
+
+# Define preprocessor
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', StandardScaler(), ['recency', 'frequency', 'total', 'Discount_Percent']),
+        ('cat', OneHotEncoder(), ['Region', 'category'])
+    ])
+
+# Define pipeline
+pipeline = Pipeline(steps=[('preprocessor', preprocessor),
+                           ('clusterer', KMeans(random_state=42))])
+
+# Prepare data for clustering
+X = customers.drop('cust_id', axis=1)
+
+# Find optimal number of clusters using the elbow method
+distortions = []
+K = range(1, 11)
+for k in K:
+    pipeline.named_steps['clusterer'].n_clusters = k
+    pipeline.fit(X)
+    distortions.append(pipeline.named_steps['clusterer'].inertia_)
+
+# Plot the elbow
+plt.figure(figsize=(10, 6))
+plt.plot(K, distortions, 'bx-')
+plt.xlabel('k')
+plt.ylabel('Distortion')
+plt.title('The Elbow Method showing the optimal k')
+plt.show()
+
+# Apply K-Means clustering with the optimal number of clusters
+pipeline.named_steps['clusterer'].n_clusters = 3
+pipeline.fit(X)
+
+# Get cluster labels
+cluster_labels = pipeline.predict(X)
+
+# Add cluster labels to the customer dataframe
+customers['Cluster'] = cluster_labels
+
+# Analyze the clusters
+cluster_analysis = customers.groupby('Cluster').agg({
+    'recency': 'mean',
+    'frequency': 'mean',
+    'total': 'mean',
+    'Discount_Percent': 'mean',
+    'Region': lambda x: x.value_counts().index[0],
+    'category': lambda x: x.value_counts().index[0],
+    'cust_id': 'count'
+}).reset_index()
+
+cluster_analysis.rename(columns={'cust_id': 'count'}, inplace=True)
