@@ -1,11 +1,37 @@
-# Customer Segmentation and Analysis
+# Customer Segmentation for E-commerce Sales
 
-Project sections:
-- Dashboard on Tableau
-- Python code
+## Key Findings: 
+I identified three distinct segments of customers: High-spending frequent shoppers, Low-spending infrequent shoppers, and Moderate-spending discount lovers.
+
+## Table of Contents
+- **Business Problem**: An e-commerce company wants to understand its customer behavior for targeted marketing and improving sales.
+
+- **Data Source**: [Sales Dataset](https://github.com/stanley-george-joseph/Customer-Analysis-Tableau)
+
+- **Methods**: Data Cleaning, Feature Engineering, Data Standardization, K-Means Clustering, Cluster Analysis, Data Visualization
+
+- **Tech Stack**: Python, Pandas, Scikit-learn, Matplotlib, Jupyter Notebook, Tableau, ChatGPT by OpenAI
 
 
-## Dashboard
+## **Results at a glance**:
+
+### What I learned: 
+Customers can be segmented into distinct groups based on their purchase behavior. Each segment can be targeted with specific marketing strategies to improve sales and customer engagement.
+
+### Recommendations: 
+Implement targeted marketing strategies for each customer segment. Regularly update the segmentation to capture changes in customer behavior.
+
+### Limitations:
+- Assumption that the dataset is representative of all customers.
+- K-means clustering assumes that clusters are spherical and equally sized, which might not be the case.
+
+### Areas of Improvement:
+- Incorporate more customer features if available (e.g., demographic information, customer feedback).
+- Try other clustering algorithms that can handle different cluster shapes and sizes (e.g., DBSCAN, hierarchical clustering).
+
+## Explore the code: [Python Code]()
+
+## Explore the Dashboard
 ![Tableau Customer Analysis Dashboard](https://github.com/DarkoMonzioCompagnoni/media/blob/main/Customer%20analysis%20_%20Tableau%20Public.gif)
 [See the dashboard on Tableau Public](https://public.tableau.com/app/profile/darko.monzio.compagnoni/viz/Customeranalysis_16866582899760/Customeranalysis)
 
